@@ -12,7 +12,9 @@ const Window = ({ msgArr }) => {
       }}
     >
       {msgArr.map((content) => (
-        <Message bot={content.bot}>{content.msg}</Message>
+        <Message key={content.key} bot={content.bot}>
+          {content.msg}
+        </Message>
       ))}
     </div>
   );

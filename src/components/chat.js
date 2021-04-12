@@ -1,45 +1,73 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import InputField from "./inputField";
 import Window from "./window";
+import Highscore from "./highscore";
 
 const Chat = () => {
   const [msgArr, setMsgArr] = useState([]);
   const [start, setStart] = useState(false);
+  const [score, setScore] = useState(0);
   const [counter, setCounter] = useState(0);
+  const [answerArr, setAnswerArr] = useState([]);
 
-  useEffect(() => {
-    console.log(msgArr);
-    console.log(start);
-    console.log(counter);
-  }, [msgArr, start, counter]);
-
+  // Check the answer from array
   const logic = (input) => {
-    if (input === "1") {
+    if (input == answerArr[counter]) {
       setMsgArr([
         ...msgArr,
         { key: msgArr.length, msg: input, bot: false },
-        { key: msgArr.length + 1, msg: "okej", bot: true },
+        { key: msgArr.length + 1, msg: answerArr[counter + 1], bot: true },
       ]);
+      setCounter(counter + 2);
     } else {
       setMsgArr([
         ...msgArr,
         { key: msgArr.length, msg: input, bot: false },
-        { key: msgArr.length + 1, msg: "?", bot: true },
+        {
+          key: msgArr.length + 1,
+          msg: "Game over! Score: " + score,
+          bot: true,
+        },
       ]);
     }
   };
 
-  const count = () => {
-    setCounter(counter + 1);
-    console.log(counter);
+  // Keep score in game
+  const gameScore = () => {
+    setScore(score + 1);
+
+    localStorage.setItem("score", score);
+
+    if (score > localStorage.getItem("high-score")) {
+      localStorage.setItem("high-score", score);
+    }
   };
 
+  // Get input and start game
   const getInput = (input) => {
-    count();
     if (start) {
       logic(input);
+      gameScore();
     } else if (input === "start") {
-      setStart(true);
+      if (!start) {
+        if (Math.floor(Math.random() * 2)) {
+          setMsgArr([
+            ...msgArr,
+            { key: 0, msg: input, bot: false },
+            { key: 0 + 1, msg: "You start", bot: true },
+          ]);
+        } else {
+          setMsgArr([
+            ...msgArr,
+            { key: 0, msg: input, bot: false },
+            { key: 0 + 1, msg: "I Start", bot: true },
+            { key: 0 + 2, msg: "1", bot: true },
+          ]);
+          setCounter(counter + 1);
+        }
+        setAnswerArr(createAnswerArray);
+        setStart(true);
+      }
     } else {
       setMsgArr([
         { key: msgArr.length, msg: "Write start to start game", bot: true },
@@ -47,8 +75,26 @@ const Chat = () => {
     }
   };
 
+  // Answer array
+  const createAnswerArray = () => {
+    const arr = [];
+    for (let i = 1; i <= 100; i++) {
+      if (i % 3 === 0 && i % 5 === 0) {
+        arr.push("fizzbuzz");
+      } else if (i % 3 === 0) {
+        arr.push("fizz");
+      } else if (i % 5 === 0) {
+        arr.push("buzz");
+      } else {
+        arr.push(i);
+      }
+    }
+    return arr;
+  };
+
   return (
     <div style={{ height: "600px", width: "400px" }}>
+      <Highscore />
       <Window msgArr={msgArr} />
       <InputField getInput={getInput} />
     </div>
@@ -56,14 +102,3 @@ const Chat = () => {
 };
 
 export default Chat;
-// for (let i = 1; i <= 100; i++) {
-//   if (i % 3 === 0 && i % 5 === 0) {
-//     console.log("fizzbuzz");
-//   } else if (i % 3 === 0) {
-//     console.log("fizz");
-//   } else if (i % 5 === 0) {
-//     console.log("buzz");
-//   } else {
-//     console.log(i);
-//   }
-// }
