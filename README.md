@@ -1,4 +1,4 @@
-## fizzbuzz
+## Fizzbuzz
 
 Klona ner och kör `npm i`
 
