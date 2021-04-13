@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "./inputField";
 import Window from "./window";
 import Highscore from "./highscore";
@@ -18,15 +18,20 @@ const Chat = () => {
         { key: msgArr.length, msg: input, bot: false },
         { key: msgArr.length + 1, msg: answerArr[counter + 1], bot: true },
       ]);
+      gameScore();
       setCounter(counter + 2);
     } else {
+      if (msgArr[msgArr.length - 1].gameOver) {
+        return;
+      }
       setMsgArr([
         ...msgArr,
         { key: msgArr.length, msg: input, bot: false },
         {
           key: msgArr.length + 1,
-          msg: "Game over! Score: " + score,
+          msg: "Game over! Score: " + (score - 1),
           bot: true,
+          gameOver: true,
         },
       ]);
     }
@@ -47,7 +52,6 @@ const Chat = () => {
   const getInput = (input) => {
     if (start) {
       logic(input);
-      gameScore();
     } else if (input === "start") {
       if (!start) {
         if (Math.floor(Math.random() * 2)) {
@@ -56,6 +60,7 @@ const Chat = () => {
             { key: 0, msg: input, bot: false },
             { key: 0 + 1, msg: "You start", bot: true },
           ]);
+          gameScore();
         } else {
           setMsgArr([
             ...msgArr,
@@ -64,6 +69,7 @@ const Chat = () => {
             { key: 0 + 2, msg: "1", bot: true },
           ]);
           setCounter(counter + 1);
+          gameScore();
         }
         setAnswerArr(createAnswerArray);
         setStart(true);

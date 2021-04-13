@@ -9,13 +9,18 @@ const Window = ({ msgArr }) => {
         width: "400px",
         overflow: "scroll",
         flexGrow: " 1",
+        display: "flex",
+        flexDirection: "column-reverse",
       }}
     >
-      {msgArr.map((content) => (
-        <Message key={content.key} bot={content.bot}>
-          {content.msg}
-        </Message>
-      ))}
+      {msgArr
+        .slice(0)
+        .reverse()
+        .map((content) => (
+          <Message key={content.key} bot={content.bot}>
+            {content.msg}
+          </Message>
+        ))}
     </div>
   );
 };
